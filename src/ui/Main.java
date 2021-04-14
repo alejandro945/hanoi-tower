@@ -11,7 +11,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
         cases = new ArrayList<>();
         readProblem(br);
-        // WriteSolution(bw, 0);
         exportSolution();
         br.close();
         bw.close();
@@ -30,17 +29,31 @@ public class Main {
         }
     }
 
-    public static String WriteSolution(BufferedWriter bw, int redux, String data) throws IOException {
+    public static String getCases() throws IOException {
+        ArrayList<String> c = new ArrayList<>();
+        WriteSolution(bw, 0, c);
+        String data = "";
+        for (String string : c) {
+            data += string;
+        }
+        return data;
+    }
+
+    public static ArrayList<String> WriteSolution(BufferedWriter bw, int redux, ArrayList<String> data)
+            throws IOException {
         if (redux < cases.size()) {
             int[] render = new int[3];
             render[0] = cases.get(redux);
-            // bw.write("\n" + render[0] + " " + render[1] + " " + render[2] + "\n");
-            // bw.flush();
-            data += "\n" + render[0] + " " + render[1] + " " + render[2] + "\n";
+            // --------------------------------CONSOLE-------------------------------
+            bw.write("\n" + render[0] + " " + render[1] + " " + render[2] + "\n");
+            bw.flush();
+            // --------------------------------EXPORT--------------------------------
+            data.add((redux == 0) ? render[0] + " " + render[1] + " " + render[2] + "\n"
+                    : "\n" + render[0] + " " + render[1] + " " + render[2] + "\n");
             ArrayList<String> concat = new ArrayList<>();
             concat = hanoi(cases.get(redux), 0, 1, 2, render, concat);
             for (String string : concat) {
-                data += string;
+                data.add(string);
             }
             WriteSolution(bw, redux + 1, data);
         }
@@ -48,13 +61,15 @@ public class Main {
     }
 
     public static ArrayList<String> hanoi(int cases, int init, int medium, int end, int[] render,
-            ArrayList<String> concat) {
+            ArrayList<String> concat) throws IOException {
         if (cases > 0) {
             hanoi(cases - 1, init, end, medium, render, concat);
             render[init]--;
             render[end]++;
-            // bw.write(render[0] + " " + render[1] + " " + render[2] + "\n");
-            // bw.flush();
+            // --------------------------------CONSOLE-------------------------------
+            bw.write(render[0] + " " + render[1] + " " + render[2] + "\n");
+            bw.flush();
+            // --------------------------------EXPORT--------------------------------
             concat.add((render[0] + " " + render[1] + " " + render[2] + "\n"));
             hanoi(cases - 1, medium, init, end, render, concat);
         }
@@ -63,9 +78,7 @@ public class Main {
 
     public static void exportSolution() throws IOException {
         BufferedWriter bwf = new BufferedWriter(new FileWriter("data/Output.txt"));
-        String data = "";
-        WriteSolution(bw, 0, data);
-        // bwf.write(WriteSolution(bw, 0, data));
+        bwf.write(getCases());
         bwf.close();
         bw.write("Data have been imported and exported succesfully, CHECK OUTPUT.TXT IN DATA FOLDER");
         bw.flush();
